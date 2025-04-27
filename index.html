@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Light Scheduler</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+            color: #555;
+        }
+        input[type="time"] {
+            padding: 8px;
+            width: 200px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        #status {
+            margin-top: 20px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Light Scheduler</h1>
+        <label for="on-time">Light ON Time:</label>
+        <input type="time" id="on-time" required>
+        <label for="off-time">Light OFF Time:</label>
+        <input type="time" id="off-time" required>
+        <button onclick="submitSchedule()">Submit Schedule</button>
+        <div id="status">No schedule submitted</div>
+    </div>
+    <script>
+        const ws = new WebSocket('ws://localhost:8765');
+        ws.onopen = () => console.log('Connected to WebSocket server');
+        ws.onmessage = (event) => {
+            document.getElementById('status').textContent = event.data;
+        };
+        ws.onerror = (error) => {
+            console.error('WebSocket error:', error);
+            document.getElementById('status').textContent = 'Error connecting to server';
+        };
+
+        function submitSchedule() {
+            const onTime = document.getElementById('on-time').value;
+            const offTime = document.getElementById('off-time').value;
+            if (!onTime || !offTime) {
+                document.getElementById('status').textContent = 'Please set both ON and OFF times';
+                return;
+            }
+            const schedule = JSON.stringify({ on: onTime, off: offTime });
+            ws.send(schedule);
+            document.getElementById('status').textContent = `Schedule submitted: ON at ${onTime}, OFF at ${offTime}`;
+        }
+    </script>
+</body>
+</html>
