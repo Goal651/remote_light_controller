@@ -16,8 +16,8 @@ MQTT broker (provided: 157.173.101.159:1883)
 
 Setup
 
-Clone the repository:git clone <repository-url>
-cd <repository-folder>
+Clone the repository:git clone https://github.com/Goal651/remote_light_controller.git
+cd remote_light_controller
 
 
 Install Python dependencies:pip install websockets paho-mqtt pyserial
@@ -77,6 +77,8 @@ The system checks the current time against scheduled times every second.
 For demo purposes, schedules are sent as MQTT messages with the format <command> <time> (e.g., 1 10:50).
 
 Screenshots/Demo
+
+ 
 
 [Add screenshots or a GIF of the interface and light control here]
 Example: Web interface showing schedule submission.

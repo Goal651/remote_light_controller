@@ -1,90 +1,148 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Light Scheduler</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Light Scheduler - Hacker Mode</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            background-color: #0f0f0f;
+            color: #00ff00;
+            font-family: 'Courier New', Courier, monospace;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
-            background-color: #f0f0f0;
         }
+
         .container {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            background: #111;
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            padding: 30px;
             text-align: center;
+            box-shadow: 0 0 20px #00ff00;
+            width: 340px;
         }
+
         h1 {
-            color: #333;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #00ff00;
         }
+
         label {
             display: block;
             margin: 10px 0 5px;
-            color: #555;
         }
+
         input[type="time"] {
-            padding: 8px;
-            width: 200px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+            width: 100%;
+            padding: 10px;
+            background: #000;
+            color: #00ff00;
+            border: 1px solid #00ff00;
+            border-radius: 5px;
+            font-family: inherit;
         }
+
         button {
             margin-top: 20px;
             padding: 10px 20px;
-            background-color: #28a745;
-            color: white;
-            border: none;
-            border-radius: 4px;
+            background: transparent;
+            color: #00ff00;
+            border: 2px solid #00ff00;
+            font-weight: bold;
+            border-radius: 5px;
             cursor: pointer;
+            transition: 0.2s;
         }
+
         button:hover {
-            background-color: #218838;
+            background: #00ff00;
+            color: #000;
         }
+
         #status {
             margin-top: 20px;
-            color: #333;
+            font-size: 0.9rem;
+            text-align: left;
+            white-space: pre-wrap;
+            min-height: 40px;
+            border-top: 1px solid #00ff00;
+            padding-top: 10px;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 10px;
+            background-color: #00ff00;
+            animation: blink 0.8s infinite;
+            height: 1rem;
+            vertical-align: bottom;
+        }
+
+        @keyframes blink {
+
+            0%,
+            50% {
+                opacity: 1;
+            }
+
+            50.01%,
+            100% {
+                opacity: 0;
+            }
         }
     </style>
 </head>
+
 <body>
     <div class="container">
-        <h1>Light Scheduler</h1>
-        <label for="on-time">Light ON Time:</label>
-        <input type="time" id="on-time" required>
-        <label for="off-time">Light OFF Time:</label>
-        <input type="time" id="off-time" required>
-        <button onclick="submitSchedule()">Submit Schedule</button>
-        <div id="status">No schedule submitted</div>
+        <h1>LIGHT SCHEDULER</h1>
+        <label for="on-time">[+] Light ON Time:</label>
+        <input type="time" id="on-time" required />
+        <label for="off-time">[+] Light OFF Time:</label>
+        <input type="time" id="off-time" required />
+        <button onclick="submitSchedule()">SUBMIT</button>
+        <div id="status"><span id="typed"> Awaiting command...</span><span class="cursor"></span></div>
     </div>
+
     <script>
         const ws = new WebSocket('ws://localhost:8765');
-        ws.onopen = () => console.log('Connected to WebSocket server');
-        ws.onmessage = (event) => {
-            document.getElementById('status').textContent = event.data;
-        };
-        ws.onerror = (error) => {
-            console.error('WebSocket error:', error);
-            document.getElementById('status').textContent = 'Error connecting to server';
-        };
+
+        ws.onopen = () => typeMessage('> Connected to WebSocket server');
+        ws.onmessage = (event) => typeMessage('> ' + event.data);
+        ws.onerror = () => typeMessage('> ERROR: Unable to connect to server');
+
+        function typeMessage(message) {
+            const typed = document.getElementById('typed');
+            typed.textContent = '';
+            let index = 0;
+            const interval = setInterval(() => {
+                if (index < message.length) {
+                    typed.textContent += message.charAt(index);
+                    index++;
+                } else {
+                    clearInterval(interval);
+                }
+            }, 30); // typing speed
+        }
 
         function submitSchedule() {
             const onTime = document.getElementById('on-time').value;
             const offTime = document.getElementById('off-time').value;
             if (!onTime || !offTime) {
-                document.getElementById('status').textContent = 'Please set both ON and OFF times';
+                typeMessage('> ERROR: Set both ON and OFF times');
                 return;
             }
             const schedule = JSON.stringify({ on: onTime, off: offTime });
             ws.send(schedule);
-            document.getElementById('status').textContent = `Schedule submitted: ON at ${onTime}, OFF at ${offTime}`;
+            typeMessage(`> Schedule submitted:\n  ON  @ ${onTime}\n  OFF @ ${offTime}`);
         }
     </script>
 </body>
+
 </html>
