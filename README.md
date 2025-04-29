@@ -78,11 +78,12 @@ For demo purposes, schedules are sent as MQTT messages with the format <command>
 
 Screenshots/Demo
 
- 
+Web interface 
+![alt text](image.png)
 
-[Add screenshots or a GIF of the interface and light control here]
-Example: Web interface showing schedule submission.
-Example: Light turning ON/OFF at scheduled times.
+
+WEbsocket server                                                  
+![alt text](image-1.png)
 
 Troubleshooting
 

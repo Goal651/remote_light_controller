@@ -10,7 +10,8 @@ time.sleep(2)
 
 def on_connect(client, userdata, flags, rc):
     print(f"Connected to MQTT broker with code {rc}")
-    client.subscribe("relay/schedule")
+    client.subscribe("relay/wigo_schedule")
+    print("Subscribed to topic: relay/wigo_schedule")
 
 
 def on_message(client, userdata, msg):
