@@ -5,7 +5,7 @@ import time
 
 # Serial connection to Arduino
 ser = serial.Serial("/dev/ttyUSB0", 9600, timeout=1)
-time.sleep(2)  # Wait for serial connection to initialize
+time.sleep(2) 
 
 
 def on_connect(client, userdata, flags, rc):

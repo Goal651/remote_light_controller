@@ -11,9 +11,9 @@ async def handle_connection(websocket, path):
                 on_time = schedule['on']
                 off_time = schedule['off']
                 # Publish ON command
-                os.system(f'mosquitto_pub -h 157.173.101.159 -p 1883 -t "relay/schedule" -m "1 {on_time}"')
+                os.system(f'mosquitto_pub -h 157.173.101.159 -p 1883 -t "relay/wigo_schedule" -m "1 {on_time}"')
                 # Publish OFF command
-                os.system(f'mosquitto_pub -h 157.173.101.159 -p 1883 -t "relay/schedule" -m "0 {off_time}"')
+                os.system(f'mosquitto_pub -h 157.173.101.159 -p 1883 -t "relay/wigo_schedule" -m "0 {off_time}"')
                 await websocket.send(f"Schedule received: ON at {on_time}, OFF at {off_time}")
             except json.JSONDecodeError:
                 await websocket.send("Error: Invalid schedule format")
